@@ -1,0 +1,21 @@
+# Design Agency OS configuration. Humans edit this file; tools read it.
+# Reference: 00_README/PLUGINS.md (plug-ins) and 00_README/ARCHITECTURE.md (operating model).
+schema: agency/v1
+name: design-agency
+
+# template  — the blank harness: 01_Project-Hubs holds only _template-project and no plug-in is mounted.
+# workspace — a repository doing real work. `agency.py hub new` and `agency.py plugin add` switch this for you.
+mode: template
+
+discovery:
+  # Runtimes that receive generated discovery links: copilot (.github/*) and/or claude (.claude/*).
+  targets: [copilot, claude]
+
+# Plug-ins are plugged in when their mount is checked out (`agency.py plugin add <name>`); no flag to flip.
+# Optional per-plug-in overrides:
+#   fde-design-toolkit:
+#     edition: full                 # full | public
+#     source: https://github.com/<org>/<fork>.git
+#     mount: 03_Agents-and-Skills/Skills/fde-design-toolkit
+#     enabled: false                # keep mounted but hide from discovery
+plugins: {}

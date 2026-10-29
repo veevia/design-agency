@@ -1,0 +1,19 @@
+# Plug-in profile: Video Shotcraft cinematic shot recipes (third-party, Apache-2.0). Schema: 00_README/PLUGINS.md
+schema: agency-plugin/v1
+name: video-shotcraft
+title: Video Shotcraft
+summary: >-
+  Third-party skill for cinematic product videos with Remotion: shot recipes, motion previews,
+  reusable components, sound effects and a production template. The repository is one skill.
+kind: skills
+homepage: https://github.com/Vincentwei1021/video-shotcraft
+license: Apache-2.0
+mount: 03_Agents-and-Skills/Skills/video-shotcraft
+default_edition: upstream
+editions:
+  upstream:
+    source: https://github.com/Vincentwei1021/video-shotcraft.git
+    branch: main
+    shallow: true          # ~0.2 GB of history vs ~50 MB of files; mount the tip only
+    marker: .claude-plugin/plugin.json
+    provides_from: claude-plugin

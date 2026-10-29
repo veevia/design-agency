@@ -1,0 +1,10 @@
+skill: extreme-clarity
+description: Verifies lint catches missing TL;DR and adjective-only magnitudes.
+updated: 2026-10-29
+signals:
+  - id: catches-missing-tldr
+    rule: missing-tldr
+    min_count: 1
+  - id: catches-adjective-magnitude
+    rule: adjective-magnitude
+    min_count: 1

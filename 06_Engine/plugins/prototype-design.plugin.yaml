@@ -1,0 +1,56 @@
+# Plug-in profile: Prototype Production Graph (PDG) engine. Schema: 00_README/PLUGINS.md
+schema: agency-plugin/v1
+name: prototype-design
+title: Prototype Production Graph (PDG)
+summary: >-
+  Local, domain-agnostic graph engine that turns an authorized brief into a verified prototype:
+  19 nodes, eight phases, task packets, browser checks, bounded rework and named human gates.
+kind: engine
+homepage: https://github.com/veevia/prototype-production-graph
+license: MIT
+mount: 02_Workflows/prototype-design
+default_edition: standalone
+requires:
+  python: "3.11"
+  python_modules: [pydantic, yaml, jsonschema]
+  optional_commands: [node]
+host_adapters:
+  prompts: [prototype-design]
+  agents: [prototype-runner-qa]
+  sops: [prototype-design]
+project:
+  marker: pdg.project.yaml
+  state_dir: .pdg
+  location: 01_Project-Hubs/<hub>/03_build/<prototype>/
+skill_bindings:          # the engine's own graph names the skills each node may load
+  file: graph/workflow.yaml
+  collection: nodes
+  field: skills
+  companions:            # plug-ins that supply bound skills the native library does not
+    - plugin: fde-design-toolkit
+      edition: full      # 32 bound skills; none ship in the public edition
+    - anthropic-skills
+    - impeccable
+editions:
+  standalone:
+    source: https://github.com/veevia/prototype-production-graph.git
+    branch: main
+    marker: pdg/__main__.py
+checks:
+  - name: graph-validate
+    summary: Validate the workflow graph.
+    run: ["{python}", -m, pdg, validate]
+  - name: docs-in-sync
+    summary: Generated catalogs, schemas and diagrams match the graph.
+    run: ["{python}", -m, pdg, docs, --check]
+smoke:
+  - name: offline-dry-run
+    summary: Run the fictional example end to end in a temporary folder (no network, no model calls).
+    run: ["{python}", -m, pdg, dry-run, --out, "{tmp}/pdg-dry-run"]
+    side_effects: temp
+    timeout: 1800
+  - name: ledger-verify
+    summary: Verify the hash-chained ledger the dry run produced (smoke steps share {tmp} and run in order).
+    run: ["{python}", -m, pdg, ledger-verify, "{tmp}/pdg-dry-run"]
+    side_effects: temp
+    timeout: 600

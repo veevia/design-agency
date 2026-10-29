@@ -1,0 +1,1 @@
+../../02_Workflows/prompts/go-wider.prompt.md

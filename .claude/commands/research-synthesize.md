@@ -1,0 +1,1 @@
+../../02_Workflows/prompts/research-synthesize.prompt.md

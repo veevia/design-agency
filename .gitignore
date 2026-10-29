@@ -1,0 +1,61 @@
+# Drafts are local-only by default
+**/_drafts/
+**/_drafts/**
+
+# Customer-tenant content is git-ignored by default; opt-in per file via `git add -f`
+*_TENANT.md
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/*.log
+*.swp
+*.tmp
+
+# Secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+
+# Source material inbox (raw PPTXs, PDFs, transcripts) — do not commit
+00_README/_inbox/
+00_README/_templates/_inbox/
+Archive/_inbox/
+
+# Build artifacts from sub-projects (agents, MCP servers, icon repos)
+**/node_modules/
+**/dist/
+**/build/
+**/.next/
+**/.turbo/
+**/__pycache__/
+**/.venv*/
+**/*.pyc
+**/.pytest_cache/
+
+# Azure Developer CLI local state
+.azure/
+
+# Copilot session state (ephemeral, not knowledge)
+.copilot-tracking/
+
+# Playwright MCP scratch (console logs + page snapshots) — ephemeral
+.playwright-mcp/
+
+# Per-program analysis caches — ephemeral, regenerated on demand
+**/.analysis-state.json
+**/.llm-extraction-cache.json
+
+# npm install collision artifacts (e.g. "package-lock 2.json") and editor backups
+package-lock *.json
+README *.md
+
+# Claude Code machine-local settings (team settings live in .claude/settings.json)
+.claude/settings.local.json
+
+# Plug-in engine scratch and local interpreters live outside Git; engine project ledgers are evidence and stay tracked
+**/.agency-scratch/
+
+# Local, never committed: privacy denylists and other machine-local agency state
+.agency/

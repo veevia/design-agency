@@ -1,0 +1,1 @@
+../../02_Workflows/prompts/sprint-morning-standup.prompt.md

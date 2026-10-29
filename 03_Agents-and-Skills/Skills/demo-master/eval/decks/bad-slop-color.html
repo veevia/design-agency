@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>bad: slop color</title>
+<style>.hero{background:linear-gradient(90deg,#ff00ff,#7c3aed);color:#fff}</style></head>
+<body>
+  <!-- FIXTURE: must be caught by the linter's `slop-color` rule (#ff00ff) -->
+  <div class="hero">still</div>
+  <script>console.log("[bad] OK \u2014 1 beats");</script>
+</body></html>

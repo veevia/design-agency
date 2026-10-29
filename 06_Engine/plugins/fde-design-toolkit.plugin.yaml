@@ -1,0 +1,51 @@
+# Plug-in profile: how the host mounts, recognises, wires and checks one capability package.
+# Schema: 00_README/PLUGINS.md. Validate with: python3 06_Engine/scripts/agency.py plugin list
+schema: agency-plugin/v1
+name: fde-design-toolkit
+title: FDE Design Toolkit
+summary: >-
+  Forward-deployed design skills for engagement work, from discovery to ship. The public edition
+  carries 12 skills; the full edition adds 68 skills, five reviewer agents, Claude commands and gates.
+kind: skills
+homepage: https://github.com/veevia/fde-design-toolkit
+license: MIT
+mount: 03_Agents-and-Skills/Skills/fde-design-toolkit
+default_edition: public
+requires:
+  python: "3.11"
+  python_modules: [yaml]
+editions:
+  # The full edition is listed first: its marker is more specific than the public manifest.
+  full:
+    summary: Private full edition (Claude plug-in layout plus Copilot reviewer adapters).
+    source: https://github.com/veevia/fde-design-toolkit-private.git
+    branch: main
+    marker: .claude-plugin/plugin.json
+    provides_from: claude-plugin
+    command_prefix: fde-
+    provides:
+      agents:
+        - glob: integrations/copilot/*.agent.md
+    checks:
+      - name: unit-tests
+        summary: The toolkit's maintained unittest suites (writes no repository caches).
+        run: ["{python}", "-B", "scripts/run_tests.py"]
+        timeout: 1200
+      - name: authoring-gates
+        summary: Static authoring and persisted behavioral-evidence gates (what the toolkit's CI runs).
+        run: [bash, scripts/run_gates.sh]
+        env: {PYTHON: "{python}"}
+        requires: [bash]
+        timeout: 1200
+  public:
+    summary: Public edition (12 skills across discover, frame, specify, prototype, learn).
+    source: https://github.com/veevia/fde-design-toolkit.git
+    branch: main
+    marker: manifest.json
+    provides:
+      skills:
+        - glob: "0[1-5]-*/*/SKILL.md"
+    checks:
+      - name: package-validation
+        summary: The public package validator (read-only).
+        run: ["{python}", validation/validate_package.py]

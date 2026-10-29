@@ -1,0 +1,1 @@
+../../02_Workflows/prompts/sprint-generate-artifact.prompt.md

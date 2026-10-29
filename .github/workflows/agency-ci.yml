@@ -1,0 +1,33 @@
+name: agency-ci
+
+# The OS review is the single integrity gate (00_Agentic-OS/agentic-os-review.py).
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Plug-ins are pinned submodules; the review checks them. Private plug-ins (for example the FDE
+          # full edition) need a repository secret PLUGINS_TOKEN that can read them.
+          submodules: recursive
+          token: ${{ secrets.PLUGINS_TOKEN || github.token }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install harness dependencies
+        run: python -m pip install -r 06_Engine/requirements.txt
+
+      - name: OS review
+        run: python 00_Agentic-OS/agentic-os-review.py

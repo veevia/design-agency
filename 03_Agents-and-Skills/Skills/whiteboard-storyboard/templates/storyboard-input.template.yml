@@ -1,0 +1,93 @@
+# Storyboard input schema (Whiteboard Storyboard skill)
+#
+# Fill these fields, then render from the repository root:
+#   python3 03_Agents-and-Skills/Skills/whiteboard-storyboard/scripts/render_storyboard.py \
+#       <this-file>.yml <this-file>.png      # needs matplotlib
+#   python3 03_Agents-and-Skills/Skills/whiteboard-storyboard/scripts/render_storyboard_svg.py \
+#       <this-file>.yml <this-file>.svg
+#
+# The renderers reject a spec with no title, without exactly 5 panels (P1-P5), or with a panel
+# missing its id or title. Also keep to:
+#   - a title that fits on one line and a subtitle that defines every acronym
+#   - every panel: title (UPPERCASE, ~16 chars max), kicker (short parenthetical),
+#     body (list of lines, ≤22 lines total), accent (black|blue|green|red|orange)
+#   - panel.persona on P1 and P5, the same name in both
+#   - at least one number (digit) in every panel body
+#
+# Body-line conventions (the SVG renderer draws all of them; the PNG renderer's scene panels
+# draw the first two). Any other line is handwritten text.
+#   Thought: "..."               a thought bubble beside the persona (P1)
+#   "  a · b · c" (indented)     one window per item, e.g. the systems checked by hand
+#   S<n> STAGE description       a flywheel stage (P2 draws the wheel); "← note" marks the focus stage
+#   a ↔ b ↔ c                    a chain of linked record nodes
+#   "  · item" (indented)        a checklist item
+#   P5's first line              the headline metric; P5's other lines become ticked bullets
+#
+# The values below are a generic worked example (an organization with three regional sites whose
+# coordinators triage overnight service requests). Replace them all.
+
+title: "TRIAGE FLYWHEEL: INTAKE → ASSESS → MATCH → SCHEDULE → FIX → LEARN"
+subtitle: "Worked example (generic). CRM = customer relationship management. DB = database. ETA = estimated time of arrival."
+persona_name: "Coordinator"
+persona_role: "Lead Coordinator"
+
+panels:
+  - id: P1
+    title: "BEFORE"
+    kicker: "(≈40 min every morning)"
+    accent: red
+    persona: "Coordinator"
+    body:
+      - "Inbox: 38 overnight requests. 6 systems to check:"
+      - "  booking inbox · CRM · inventory · calendar · contract DB · billing"
+      - "Thought: \"Which specialist? Which parts? Still under contract?\""
+      - "≈40 min every morning · customer IDs disagree across 3 of 6 systems."
+      - "No record of predicted vs. actual arrival time."
+
+  - id: P2
+    title: "THE FLYWHEEL"
+    kicker: "(6 stages, one loop)"
+    accent: blue
+    body:
+      - "S1 INTAKE    requests arrive (web, phone, partner)"
+      - "S2 ASSESS    urgent (outage, safety risk) or routine?"
+      - "S3 MATCH     which specialist / which parts / which contract   ← sprint focus"
+      - "S4 SCHEDULE  slot · route · ETA"
+      - "S5 FIX       repair · parts used · request notes"
+      - "S6 LEARN     ETA vs. actual · grade notes"
+      - "1 loop. 6 stages."
+      - "Closes on itself."
+
+  - id: P3
+    title: "THE HARD PART"
+    kicker: "(S3 MATCH: one record, not 6 lookups)"
+    accent: orange
+    body:
+      - "Customer ID ≠ service address ≠ unit serial across 6 systems."
+      - "Today: a senior specialist's memory bridges the gap, ≈5 min per urgent request."
+      - "Goal: one record — customer ↔ location ↔ unit ↔ contract ↔ specialist."
+      - "Example: Unit U-200 · fault E9 · out of service · Site C."
+      - "One lookup: 12 customers have the recalled part."
+
+  - id: P4
+    title: "THE LOOP CLOSES"
+    kicker: "(S6 LEARN, the missing stage)"
+    accent: blue
+    body:
+      - "After each request closes:"
+      - "  · record ETA prediction vs. actual"
+      - "  · grade request notes (1–5)"
+      - "  · feed both back into S2 + S4"
+      - "Know-how stops living in one senior specialist's head."
+      - "New coordinators ramp in 3 weeks, not 3 months."
+
+  - id: P5
+    title: "VALUE"
+    kicker: "(sprint targets, set 2026-02-24)"
+    accent: green
+    persona: "Coordinator"
+    body:
+      - "≈40 min → <10 min each morning (4×)."
+      - "Urgent requests assigned within 2 hours."
+      - "Resources allocated right first time: 92% → 98%."
+      - "Zero missed urgent requests in peak season."

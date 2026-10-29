@@ -1,0 +1,3 @@
+# 06_Engine runtime dependencies
+# Pin minimums; let pip resolve patch versions.
+PyYAML>=6.0

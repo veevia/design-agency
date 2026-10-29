@@ -1,0 +1,19 @@
+# Plug-in profile: Impeccable frontend design fluency (third-party, Apache-2.0). Schema: 00_README/PLUGINS.md
+schema: agency-plugin/v1
+name: impeccable
+title: Impeccable
+summary: >-
+  Third-party design fluency for frontend work: one skill with polish, audit and critique commands
+  and curated anti-pattern detection. Wired from the publisher's own Claude plug-in manifest.
+kind: skills
+homepage: https://github.com/pbakaus/impeccable
+license: Apache-2.0
+mount: 03_Agents-and-Skills/Skills/impeccable
+default_edition: upstream
+editions:
+  upstream:
+    source: https://github.com/pbakaus/impeccable.git
+    branch: main
+    shallow: true          # ~0.9 GB of history vs ~80 MB of files; mount the tip only
+    marker: .claude-plugin/plugin.json
+    provides_from: claude-plugin

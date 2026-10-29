@@ -1,0 +1,24 @@
+skill: evidence-tagging
+description: Verifies lint rules catch untagged claims, `observed` without source, and `assumed` without a test — AND that the exclude / skip_if_frontmatter precision guards suppress non-claims and front-matter-attributed pages.
+updated: 2026-10-29
+signals:
+  # --- detection still bites (min_count): the rules catch real violations ---
+  - id: catches-untagged-claims
+    rule: untagged-claim-bullet
+    min_count: 2
+    # max_count guards `exclude`: vendor-x's ## Relationships section has 4 bullets
+    # (2 wiki-links, 1 **Type:** metadata, 1 trailing-? question) that MUST be
+    # suppressed. If `exclude` is removed/broken, count jumps 3 -> 7 and this fails.
+    max_count: 3
+  - id: catches-observed-without-source
+    rule: observed-without-source
+    min_count: 1
+    # max_count guards `skip_if_frontmatter`: vendor-y declares evidence-default +
+    # sources, so its 2 bare [observed] bullets MUST be skipped. If that field is
+    # removed/broken, count jumps 1 -> 3 and this fails. vendor-x (sources only, no
+    # evidence-default) is correctly NOT skipped, preserving the min_count hit.
+    max_count: 1
+  - id: catches-assumed-without-test
+    rule: assumed-without-test
+    min_count: 1
+    max_count: 1

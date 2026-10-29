@@ -1,0 +1,1 @@
+../../02_Workflows/prompts/wiki-lint.prompt.md

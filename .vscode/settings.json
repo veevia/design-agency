@@ -1,0 +1,23 @@
+{
+  "chat.useAgentsMdFile": true,
+  "chat.useClaudeMdFile": false,
+  "chat.agentSkillsLocations": {
+    ".github/skills": true,
+    ".claude/skills": false
+  },
+  "chat.agentFilesLocations": {
+    ".github/agents": true,
+    ".claude/agents": false
+  },
+  "chat.promptFilesLocations": {
+    ".github/prompts": true
+  },
+  "files.watcherExclude": {
+    "**/.venv*/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/.venv*/**": true,
+    "**/node_modules/**": true
+  }
+}

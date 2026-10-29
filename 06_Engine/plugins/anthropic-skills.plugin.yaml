@@ -1,0 +1,25 @@
+# Plug-in profile: Anthropic's published agent skills (third-party). Schema: 00_README/PLUGINS.md
+schema: agency-plugin/v1
+name: anthropic-skills
+title: Anthropic example skills
+summary: >-
+  Anthropic's published example skills. The host wires only the Apache-2.0 skills the bundled
+  engines bind (frontend design, web artifacts, web-app testing, brand guidelines, skill creation).
+  The repository's document skills carry a proprietary licence and stay unwired.
+kind: skills
+homepage: https://github.com/anthropics/skills
+license: Apache-2.0 for the wired skills (per-skill LICENSE.txt); document skills are proprietary and not wired
+mount: 03_Agents-and-Skills/Skills/anthropic-skills
+default_edition: upstream
+editions:
+  upstream:
+    source: https://github.com/anthropics/skills.git
+    branch: main
+    marker: .claude-plugin/marketplace.json
+    provides:
+      skills:
+        - glob: skills/brand-guidelines/SKILL.md
+        - glob: skills/frontend-design/SKILL.md
+        - glob: skills/skill-creator/SKILL.md
+        - glob: skills/web-artifacts-builder/SKILL.md
+        - glob: skills/webapp-testing/SKILL.md

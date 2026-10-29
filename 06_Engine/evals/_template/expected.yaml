@@ -1,0 +1,7 @@
+skill: <skill-id>
+description: <one sentence what this eval verifies>
+updated: <YYYY-MM-DD>
+signals:
+  - id: <kebab-case>
+    rule: <lint-rule-id>
+    min_count: 1

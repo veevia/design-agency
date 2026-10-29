@@ -1,0 +1,13 @@
+{
+  "outDir": "public/icons",
+  "defaultFileKey": "REPLACE_WITH_FIGMA_FILE_KEY",
+  "_comment": [
+    "fileKey is the bit between /design/ and the next slash in a Figma URL.",
+    "nodeId is from ?node-id=12-345 (use 12:345 OR 12-345 — both work).",
+    "Per-icon fileKey overrides defaultFileKey.",
+    "Run: npm run icons:sync"
+  ],
+  "icons": [
+    { "name": "example-icon", "nodeId": "1:2" }
+  ]
+}

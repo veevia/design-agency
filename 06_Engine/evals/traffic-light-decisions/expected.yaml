@@ -1,0 +1,16 @@
+skill: traffic-light-decisions
+description: Verifies lint catches Yellow without trigger/expiry, Red without unblock_owner, and team-owner.
+updated: 2026-10-29
+signals:
+  - id: catches-yellow-missing-trigger
+    rule: yellow-missing-trigger
+    min_count: 1
+  - id: catches-yellow-missing-expiry
+    rule: yellow-missing-expiry
+    min_count: 1
+  - id: catches-red-missing-unblock-owner
+    rule: red-missing-unblock-owner
+    min_count: 1
+  - id: catches-team-as-owner
+    rule: owner-the-team
+    min_count: 1

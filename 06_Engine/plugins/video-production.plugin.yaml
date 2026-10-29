@@ -1,0 +1,55 @@
+# Plug-in profile: Video Production Graph (VPG) engine. Schema: 00_README/PLUGINS.md
+schema: agency-plugin/v1
+name: video-production
+title: Video Production Graph (VPG)
+summary: >-
+  Deterministic, file-based governance for AI-assisted product-demo films: 25 nodes, measured media,
+  source grounding, six reviews, surgical rework and named human approvals.
+kind: engine
+homepage: https://github.com/veevia/video-production-graph
+license: MIT
+mount: 02_Workflows/video-production
+default_edition: standalone
+requires:
+  python: "3.11"
+  python_modules: [pydantic, yaml, jsonschema, numpy, PIL]
+  optional_commands: [ffmpeg, ffprobe, tesseract]
+host_adapters:
+  prompts: [video-production]
+  sops: [video-production]
+project:
+  marker: vpg.project.yaml
+  state_dir: .vpg
+  location: 01_Project-Hubs/<hub>/03_build/<film>/
+skill_bindings:          # the engine's own graph names the skills each node may load
+  file: graph/workflow.yaml
+  collection: nodes
+  field: skills
+  companions:            # plug-ins that supply bound skills the native library does not
+    - plugin: fde-design-toolkit
+      edition: full      # 10 bound skills; none ship in the public edition
+    - anthropic-skills
+    - impeccable
+    - video-shotcraft
+  tenant_skills:         # tenant integrations (hosted image generation, workplace grounding); a fork supplies its own
+    - azure-foundry-image
+    - workiq-grounding
+editions:
+  standalone:
+    source: https://github.com/veevia/video-production-graph.git
+    branch: main
+    marker: vpg/__main__.py
+checks:
+  - name: graph-validate
+    summary: Validate the 25-node workflow graph.
+    run: ["{python}", -m, vpg, validate]
+  - name: docs-in-sync
+    summary: Generated docs and schemas match the graph.
+    run: ["{python}", -m, vpg, docs, --check]
+smoke:
+  - name: offline-dry-run
+    summary: Build the fictional sample film offline (real 1080p media) in a temporary folder.
+    run: ["{python}", -m, vpg, dry-run, --out, "{tmp}/vpg-dry-run"]
+    side_effects: temp
+    requires: [ffmpeg, ffprobe]
+    timeout: 2400

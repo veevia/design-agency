@@ -1,0 +1,18 @@
+# Plug-in profile: UI/UX Pro Max (third-party, MIT). Schema: 00_README/PLUGINS.md
+schema: agency-plugin/v1
+name: ui-ux-pro-max
+title: UI/UX Pro Max
+summary: >-
+  Third-party UI/UX design intelligence (styles, palettes, font pairings, charts, stack guidance).
+  Wired from the publisher's own Claude plug-in manifest.
+kind: skills
+homepage: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+license: MIT
+mount: 03_Agents-and-Skills/Skills/ui-ux-pro-max-skill
+default_edition: upstream
+editions:
+  upstream:
+    source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git
+    branch: main
+    marker: .claude-plugin/plugin.json
+    provides_from: claude-plugin

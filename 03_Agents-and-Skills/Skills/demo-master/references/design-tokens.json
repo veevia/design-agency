@@ -1,0 +1,79 @@
+{
+  "_about": "Single source of truth for demo-master design scales. scripts/lint_deck.py reads this to gate a built deck; templates/engine.html :root should be generated from it. Values grounded in a hand-tuned field deck; templates/reference-deck.html is the golden exemplar.",
+  "version": "0.1.0",
+
+  "type_scale_px": {
+    "display": 88,
+    "stat_big": 62,
+    "headline": 56,
+    "stat_mut": 46,
+    "title": 42,
+    "subtitle": 35,
+    "lede": 21,
+    "body": 17,
+    "body_sm": 15,
+    "kicker": 13,
+    "label": 12,
+    "label_sm": 10.5,
+    "micro": 9,
+    "micro_xs": 8.5
+  },
+  "type_tolerance_px": 1.0,
+  "type_check_min_px": 30,
+
+  "color_roles": {
+    "ink": "#1A1F26",
+    "mute": "#4F5762",
+    "faint": "#6B7480",
+    "rule": "#C8C4BE",
+    "ambient": "#C8C4BE",
+    "slate": "#475063",
+    "accent": "#F40000",
+    "ok": "#2F8F48"
+  },
+  "semantic_palette": {
+    "blue": "#2F6FED",
+    "purple": "#7C3AED",
+    "orange": "#E08600",
+    "green": "#2E9E5B",
+    "teal": "#14B8A6"
+  },
+  "color_distance_tolerance": 46,
+  "color_min_saturation": 0.35,
+  "color_lightness_bounds": [0.12, 0.9],
+
+  "spacing_px": [4, 6, 9, 12, 14, 18, 22],
+
+  "motion_duration_s": {
+    "instant": 0.3,
+    "element": 0.72,
+    "scene": 1.35,
+    "ambient_min": 2.0,
+    "ambient_max": 6.0
+  },
+  "easing": {
+    "standard": "cubic-bezier(.2,.7,.2,1)",
+    "route": "cubic-bezier(.33,0,.12,1)"
+  },
+  "physics": {
+    "gravity": 0.14,
+    "restitution": 0.32,
+    "spring_damping": [13, 14],
+    "fps": 60,
+    "frame_speed": 0.6
+  },
+
+  "lint": {
+    "fake_data_tokens": ["lorem", "ipsum", "placeholder", "John Doe", "Jane Doe", "TODO", "FIXME", "example.com", "your text here", "sample text", "dummy"],
+    "slop_hexes": ["#ff00ff", "#f0f", "#e91e63", "#9b59b6", "#ff6ec7", "#da70d6", "#ee82ee", "#8a2be2"],
+    "capture_mode_tokens": ["still", "freeze", "?capture"]
+  },
+
+  "runtime_only_rows": [
+    "0 console errors (load every beat, read console)",
+    "no element overflows the 1280x720 stage (bounding-box check)",
+    "one-time transitions fully cleared before the loop restarts",
+    "<= 1 focal motion per beat (count elements that move between two frames)",
+    "STILL frame settles (no blank capture)"
+  ]
+}

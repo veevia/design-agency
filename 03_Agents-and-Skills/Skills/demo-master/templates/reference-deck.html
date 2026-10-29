@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Demo Master — reference deck (golden)</title>
+<style>
+  :root{
+    --ink:#1A1F26; --mute:#4F5762; --faint:#6B7480; --rule:#C8C4BE; --slate:#475063;
+    --accent:#F40000; --blue:#2F6FED; --purple:#7C3AED; --orange:#E08600; --green:#2E9E5B; --teal:#14B8A6;
+    --bg:#FAFAF8; --card:#FFFFFF;
+    --font:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
+    --mono:"SF Mono",ui-monospace,Menlo,monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:#0d0e12;display:flex;align-items:center;justify-content:center;font-family:var(--font)}
+  #stage{width:1280px;height:720px;background:var(--bg);position:relative;overflow:hidden;
+    transform:scale(var(--s,1));transform-origin:center;border-radius:10px;
+    box-shadow:0 40px 90px -40px rgba(0,0,0,.6)}
+  #scene{position:absolute;inset:0}
+  .wrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 9%}
+  .wrap.center{align-items:center;text-align:center}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .headline{font-size:56px;font-weight:800;line-height:1.04;letter-spacing:-.015em;color:var(--ink)}
+  .title{font-size:42px;font-weight:800;letter-spacing:-.015em;color:var(--ink)}
+  .lede{font-size:21px;color:var(--mute);margin-top:16px;max-width:40ch}
+  .em{color:var(--accent)}
+  .slab{position:absolute;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  #cc{position:absolute;left:0;right:0;bottom:0;min-height:64px;display:flex;align-items:center;
+    padding:0 9%;background:linear-gradient(0deg,rgba(26,31,38,.06),transparent);
+    font-size:18px;color:var(--mute);z-index:6}
+  #idx{position:absolute;top:18px;left:22px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint);z-index:7}
+  #hint{position:absolute;top:18px;right:22px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--faint);z-index:7}
+  .dot{position:absolute;border-radius:50%;will-change:transform}
+  .node{position:absolute;width:54px;height:54px;border-radius:50%;background:var(--card);
+    border:2px solid var(--rule);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:11px;font-weight:700;color:var(--slate);
+    box-shadow:0 10px 24px -16px rgba(20,22,28,.5)}
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div id="scene"></div>
+    <div id="cc"></div>
+    <div id="idx"></div>
+    <div id="hint">&#8594; next &#183; &#8592; back &#183; space</div>
+  </div>
+<script>
+  "use strict";
+  // ---- tiny shared kit (mirrors the engine; tokens come from design-tokens.json) ----
+  const I = (f,a,b,c,d)=>{ const t=Math.max(0,Math.min(1,(f-a)/(b-a))); return c+(d-c)*t; };
+  const ss = t => t*t*(3-2*t); // smoothstep
+  const NS = "http://www.w3.org/2000/svg";
+  function E(p,cls,css){ const e=document.createElement("div"); if(cls)e.className=cls; if(css)Object.assign(e.style,css); p.appendChild(e); return e; }
+  function svg(p){ const s=document.createElementNS(NS,"svg"); s.setAttribute("viewBox","0 0 1280 720"); Object.assign(s.style,{position:"absolute",inset:"0",width:"100%",height:"100%"}); p.appendChild(s); return s; }
+  function path(s,d,stroke,w){ const p=document.createElementNS(NS,"path"); p.setAttribute("d",d); p.setAttribute("fill","none"); p.setAttribute("stroke",stroke); p.setAttribute("stroke-width",w||3); p.setAttribute("stroke-linecap","round"); s.appendChild(p); return p; }
+  const V = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  // ---- DECK: each beat = one caption + (optional) a content-driven motion ----
+  const DECK = [
+    { // b0 — content: name the move
+      cc:"Every deck starts the same way: choose the shape of the story before a pixel moves.",
+      build(s){ s.innerHTML =
+        '<div class="wrap"><div class="kicker">Demo Master \u00b7 reference deck</div>'+
+        '<div class="headline">Pick the <span class="em">story shape</span> first.</div>'+
+        '<div class="lede">Three metaphors carry meaning here \u2014 a route, gravity, a flywheel.</div></div>'; }
+    },
+    { // b1 — ROUTE / wayfinding (one-time transition that resolves)
+      cc:"Process content wants a map: a route the audience follows stop by stop \u2014 you are here.",
+      N:120, loop:false,
+      build(s){
+        s.innerHTML = '<div class="slab" style="left:9%;top:120px">Metaphor \u00b7 map &amp; route</div>';
+        const sv = svg(s);
+        const d = "M 200 380 C 420 300, 560 300, 740 380 S 980 460, 1080 380";
+        path(sv, d, V("--rule"), 3).setAttribute("stroke-dasharray","2 12");
+        const done = path(sv, d, V("--accent"), 4);
+        const len = done.getTotalLength(); done.style.strokeDasharray = len; done.style.strokeDashoffset = len;
+        const xs = [240,520,800,1040];
+        const stops = xs.map(x=>{ const c=document.createElementNS(NS,"circle"); c.setAttribute("cx",x); c.setAttribute("cy",360); c.setAttribute("r",9); c.setAttribute("fill","#fff"); c.setAttribute("stroke",V("--rule")); c.setAttribute("stroke-width",3); sv.appendChild(c); return c; });
+        const trav = E(s,"dot",{width:"18px",height:"18px",background:V("--accent"),boxShadow:"0 0 0 6px rgba(244,0,0,.16)",transform:"translate(231px,351px)"});
+        this._r = { done, len, stops, xs, trav };
+      },
+      update(f){ const r=this._r; const e=ss(I(f,4,this.N,0,1)); const tx=240+(1040-240)*e;
+        r.trav.style.transform = "translate("+(tx-9)+"px,351px)";
+        r.done.style.strokeDashoffset = (r.len*(1-e)).toFixed(1);
+        r.stops.forEach((c,i)=> c.setAttribute("fill", tx>=r.xs[i]-2 ? V("--accent") : "#fff")); }
+    },
+    { // b2 — GRAVITY (raw signals fall + settle; some bounce)
+      cc:"Selection wants gravity: candidates fall, the misses drop away, the survivors settle.",
+      N:150, loop:false,
+      build(s){
+        s.innerHTML = '<div class="slab" style="left:9%;top:120px">Metaphor \u00b7 gravity</div>';
+        const PAL=[V("--blue"),V("--purple"),V("--orange"),V("--green"),V("--teal")];
+        const bucket = E(s,"",{position:"absolute",left:"560px",top:"520px",width:"160px",height:"70px",
+          borderRadius:"0 0 16px 16px",border:"3px solid "+V("--slate"),borderTop:"none",opacity:"0"});
+        const G=0.14, floorY=520, dots=[];
+        for(let k=0;k<10;k++){ const x0=560+(k*53%150), y0=120+(k%3)*10, tF=Math.sqrt(2*(floorY-y0)/G), vb=0.34*G*tF;
+          const el=E(s,"dot",{width:"11px",height:"11px",background:PAL[k%5],opacity:"0",transform:"translate("+x0+"px,"+y0+"px)"});
+          dots.push({el,x0,y0,tx:600+(k*37%80),rel:6+k*4,tF,floorY,bounce:(k%3===0),vb,bdur:2*(0.34*G*tF)/G}); }
+        this._r={bucket,dots,G};
+      },
+      update(f){ const r=this._r, G=r.G;
+        r.bucket.style.opacity = I(f,0,18,0,1).toFixed(2);
+        r.dots.forEach(o=>{ const t=f-o.rel; let x=o.x0,y=o.y0,op;
+          if(t<0){ op=I(f,2,o.rel,0.15,1); }
+          else{ const e=ss(Math.min(1,t/o.tF)); x=o.x0+(o.tx-o.x0)*e;
+            if(t<=o.tF){ y=o.y0+0.5*G*t*t; }
+            else{ const tb=t-o.tF; y=(o.bounce&&tb<o.bdur)? o.floorY-(o.vb*tb-0.5*G*tb*tb) : o.floorY; }
+            op=1; }
+          o.el.style.transform="translate("+x.toFixed(1)+"px,"+y.toFixed(1)+"px)"; o.el.style.opacity=op.toFixed(2); }); }
+    },
+    { // b3 — FLYWHEEL (subtle steady loop)
+      cc:"A cycle wants a flywheel: one signal travels the loop, and the engine keeps turning.",
+      N:200, loop:true,
+      build(s){
+        s.innerHTML = '<div class="slab" style="left:9%;top:120px">Metaphor \u00b7 flywheel</div>';
+        const sv=svg(s); const cx=640,cy=372,R=150;
+        const ring=document.createElementNS(NS,"circle"); ring.setAttribute("cx",cx); ring.setAttribute("cy",cy); ring.setAttribute("r",R); ring.setAttribute("fill","none"); ring.setAttribute("stroke",V("--rule")); ring.setAttribute("stroke-width",2); ring.setAttribute("stroke-dasharray","2 10"); sv.appendChild(ring);
+        const labels=["Detect","Decide","Act","Learn"]; const cols=[V("--blue"),V("--purple"),V("--orange"),V("--green")];
+        const nodes=labels.map((t,i)=>{ const a=-Math.PI/2+i*Math.PI/2; const x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);
+          const n=E(s,"node",{left:(x-27)+"px",top:(y-27)+"px",borderColor:cols[i],color:cols[i]}); n.textContent=t; return {n,a}; });
+        const token=E(s,"dot",{width:"16px",height:"16px",background:V("--accent"),boxShadow:"0 0 0 6px rgba(244,0,0,.16)",transform:"translate("+(cx+R-8)+"px,"+(cy-8)+"px)"});
+        this._r={cx,cy,R,nodes,token};
+      },
+      update(f){ const r=this._r; const a=(f/this.N)*Math.PI*2 - Math.PI/2;
+        r.token.style.transform="translate("+(r.cx+r.R*Math.cos(a)-8).toFixed(1)+"px,"+(r.cy+r.R*Math.sin(a)-8).toFixed(1)+"px)";
+        r.nodes.forEach(o=>{ let d=Math.abs(((a-o.a+Math.PI*3)%(Math.PI*2))-Math.PI); const on=d<0.5;
+          o.n.style.transform = on?"scale(1.08)":"scale(1)"; o.n.style.boxShadow = on?"0 0 0 5px rgba(47,111,237,.14)":"0 10px 24px -16px rgba(20,22,28,.5)"; }); }
+    },
+    { // b4 — content: close
+      cc:"Same loop every time: shape, then tokens, then motion \u2014 scored against the rubric.",
+      build(s){ s.innerHTML =
+        '<div class="wrap center"><div class="kicker">The loop</div>'+
+        '<div class="headline">Now the craft is<br><span class="em">measurable</span>.</div></div>'; }
+    }
+  ];
+
+  // ---- controller: click/\u2192 advance; STILL mode settles one beat; non-loop motions stop their RAF ----
+  const scene=document.getElementById("scene"), cc=document.getElementById("cc"), idx=document.getElementById("idx");
+  const P=new URLSearchParams(location.search), STILL=P.has("still");
+  let step=-1, raf=0;
+  const settle = b => b.loop ? Math.round(b.N*0.5) : b.N;
+  function paint(i){
+    step=Math.max(0,Math.min(DECK.length-1,i)); cancelAnimationFrame(raf); scene.innerHTML="";
+    const b=DECK[step]; if(b.build) b.build(scene);
+    cc.textContent=b.cc; idx.textContent=String(step+1).padStart(2,"0")+" / "+DECK.length;
+    if(b.update){
+      if(STILL){ b.update(settle(b)); }
+      else{ let f=0; (function tk(){ b.update(f); f+=1; if(f>=b.N){ if(b.loop){ f=0; } else { b.update(b.N); return; } } raf=requestAnimationFrame(tk); })(); }
+    }
+  }
+  const next=()=>paint(step+1), prev=()=>paint(step-1);
+  addEventListener("keydown",e=>{ if(e.key===" "||e.key==="ArrowRight"){ e.preventDefault(); next(); } else if(e.key==="ArrowLeft"){ prev(); } });
+  addEventListener("click",()=>next());
+  function fit(){ document.documentElement.style.setProperty("--s", Math.min((innerWidth-40)/1280,(innerHeight-40)/720).toFixed(4)); }
+  addEventListener("resize",fit); fit();
+  paint(P.has("b") ? (parseInt(P.get("b"),10)||0) : 0);
+  console.log("[ref] OK \u2014 "+DECK.length+" beats / "+DECK.filter(b=>b.update).length+" motions");
+</script>
+</body>
+</html>

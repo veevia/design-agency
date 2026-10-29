@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Demo Master — Engine Template</title>
+<!--
+  demo-master ENGINE TEMPLATE (self-contained, no build, no deps).
+  =================================================================
+  Copy this file, then replace the SCENES + CAPTIONS data at the bottom.
+  The runtime gives you:
+    - a fixed 16:9 stage scaled to any viewport (letterboxed)
+    - a global step counter advanced by click / Tap / →  (←/Backspace go back, Space = next)
+    - number-key chapter jump (1..9), Home/End
+    - a hidden progress bar (appears on hover at the bottom)
+    - a synced CC (closed-caption) bar showing the current beat's line
+    - a sync assertion: total scene steps MUST equal total captions (logs an error if not)
+  Author scenes per references/scene-craft.md. Theme via the :root tokens.
+-->
+<style>
+  /* ---- THEME TOKENS (swap this block to restyle the whole deck) ---- */
+  :root{
+    --shell:#0e0f13;            /* letterbox / outside the stage */
+    --surface:#f6f4ef;         /* stage background */
+    --surface-2:#ece8df;       /* panels */
+    --surface-3:#e0dacc;       /* subtle fills */
+    --text:#16181d;            /* primary text */
+    --text-2:#3c4048;          /* secondary */
+    --text-mute:#6c7079;       /* muted */
+    --text-faint:#9aa0a8;      /* faint */
+    --rule:#cfc9bd;            /* hairlines */
+    --accent:#d62b1f;          /* primary accent */
+    --accent-soft:#f3c8c4;     /* soft accent */
+    --accent-glow:rgba(214,43,31,.18);
+    --font-display:"Georgia","Times New Roman",serif;
+    --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --font-mono:"SF Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --stage-w:1280px;
+    --stage-h:720px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--shell);overflow:hidden;font-family:var(--font-body)}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  /* fixed 16:9 stage; JS sets --scale to fit the viewport */
+  #stage{
+    width:var(--stage-w);height:var(--stage-h);position:relative;
+    background:var(--surface);color:var(--text);
+    transform:scale(var(--scale,1));transform-origin:center center;
+    overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45);
+    cursor:pointer;
+  }
+  .scene{position:absolute;inset:0;padding:70px 96px 150px;display:flex;flex-direction:column}
+  /* ---- shared primitives ---- */
+  .kicker{font-family:var(--font-mono);font-size:15px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:10px}
+  .hero{font-family:var(--font-display);font-size:78px;line-height:1.04;color:var(--text);font-weight:600}
+  .hero-num{font-family:var(--font-display);font-weight:700;font-size:150px;line-height:1;color:var(--accent)}
+  .sub{font-size:26px;line-height:1.4;color:var(--text-2);max-width:60ch}
+  .rule{height:2px;background:var(--rule);border:0}
+  .mono{font-family:var(--font-mono);font-size:14px;color:var(--text-mute);letter-spacing:.04em}
+  .grow{flex:1}
+  /* reveal helpers (content-driven; keyframes only, no JS timers) */
+  @keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes wipeIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+  @keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  @keyframes growBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .rise{animation:riseIn .7s cubic-bezier(.2,.7,.2,1) both}
+  .wipe{animation:wipeIn .8s cubic-bezier(.4,0,.1,1) both}
+  .pop{animation:popIn .5s cubic-bezier(.2,.8,.2,1) both}
+  .dim{opacity:.28;transition:opacity .4s}
+  .on{opacity:1;transition:opacity .4s}
+  /* ---- CC (caption) bar ---- */
+  #cc{position:absolute;left:0;right:0;bottom:54px;display:flex;justify-content:center;pointer-events:none;padding:0 120px;z-index:5}
+  #cc .cc-inner{background:rgba(14,15,19,.82);color:#fff;font-size:23px;line-height:1.4;
+    padding:12px 22px;border-radius:8px;max-width:46ch;text-align:center;font-family:var(--font-body);
+    box-shadow:0 6px 24px rgba(0,0,0,.3)}
+  #cc.hide{opacity:0}
+  /* ---- hidden progress bar ---- */
+  #progress{position:absolute;left:0;right:0;bottom:0;height:30px;display:flex;align-items:flex-end;
+    opacity:0;transition:opacity .25s;z-index:6}
+  #progress:hover,#stage:hover #progress{opacity:1}
+  #progress .track{height:5px;width:100%;background:var(--rule);position:relative}
+  #progress .fill{height:100%;background:var(--accent);width:0;transition:width .3s}
+  #progress .ticks{position:absolute;inset:0;display:flex}
+  #progress .tick{flex:1;border-right:1px solid rgba(0,0,0,.12);cursor:pointer}
+  /* ---- corner step readout (tiny, optional) ---- */
+  #idx{position:absolute;top:22px;right:26px;font-family:var(--font-mono);font-size:12px;
+    color:var(--text-faint);z-index:5;letter-spacing:.08em}
+  /* ---- start gate ---- */
+  #gate{position:absolute;inset:0;background:var(--surface);display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:18px;z-index:10}
+  #gate .t{font-family:var(--font-display);font-size:46px;color:var(--text)}
+  #gate .h{font-family:var(--font-mono);font-size:14px;color:var(--text-mute);letter-spacing:.12em}
+  #gate .cue{margin-top:10px;font-size:18px;color:var(--accent)}
+  /* ---- capture-safe still mode (?still=1): settle every animation so a headless
+     screenshot never fires mid-keyframe and grabs a blank frame. Live presentation
+     keeps full animation; only the capture path adds body.still. (scripts/render_mp4.sh
+     relies on this toggle.) ---- */
+  body.still *{animation-duration:0s!important;animation-delay:0s!important;
+    animation-fill-mode:forwards!important;transition-duration:0s!important;
+    transition-delay:0s!important}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage" aria-live="polite">
+    <div id="scene-root"></div>
+    <div id="idx"></div>
+    <div id="cc"><div class="cc-inner"></div></div>
+    <div id="progress"><div class="track"><div class="fill"></div><div class="ticks"></div></div></div>
+    <div id="gate">
+      <div class="h">DEMO MASTER</div>
+      <div class="t">Title goes here</div>
+      <div class="cue">Click anywhere · or press → to begin</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   SCENE DATA  — replace everything in this block for a new deck.
+   Each scene: { id, steps, render(localStep) -> HTML string }.
+   CAPTIONS: one line per GLOBAL step, in order. (Or set per-scene
+   `captions: [...]` and the engine flattens them — see assembly.)
+   ================================================================= */
+const SCENES = [
+  {
+    id: "cold-open", steps: 2,
+    captions: [
+      "Here's the pattern we keep hitting on every engagement.",
+      "Customers want AI magic. Engineers say: that's too much."
+    ],
+    render(s){
+      if(s===0) return `
+        <div class="scene">
+          <div class="kicker rise">Demo Master · Engine</div>
+          <div class="grow" style="display:flex;align-items:center">
+            <h1 class="hero wipe">The pattern we keep<br>hitting.</h1>
+          </div>
+          <hr class="rule rise" style="animation-delay:.3s">
+          <div class="mono rise" style="margin-top:16px;animation-delay:.45s">Tap anywhere to advance</div>
+        </div>`;
+      return `
+        <div class="scene">
+          <div class="kicker">The tension</div>
+          <div class="grow" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px">
+            <div class="pop" style="text-align:right">
+              <div class="sub" style="color:var(--text-mute)">Customer asks for</div>
+              <div class="hero" style="font-size:56px">AI magic</div>
+            </div>
+            <div class="hero-num pop" style="font-size:90px;animation-delay:.2s">⇄</div>
+            <div class="pop" style="animation-delay:.35s">
+              <div class="sub" style="color:var(--text-mute)">Engineer says</div>
+              <div class="hero" style="font-size:56px;color:var(--accent)">too much</div>
+            </div>
+          </div>
+        </div>`;
+    }
+  },
+  {
+    id: "method", steps: 3,
+    captions: [
+      "So instead of guessing, we reframed the whole thing.",
+      "Three stages: understand, identify, execute.",
+      "And it all starts with understand."
+    ],
+    render(s){
+      const stages = [["01","Understand"],["02","Identify"],["03","Execute"]];
+      const items = stages.map((st,i)=>`
+        <div class="${i<=s-0?'on':'dim'}" style="text-align:center;transition:opacity .4s">
+          <div class="hero-num" style="font-size:84px;${i===Math.min(s,2)?'':'color:var(--text-faint)'}">${st[0]}</div>
+          <div class="hero" style="font-size:40px">${st[1]}</div>
+        </div>`).join('<div class="mono" style="align-self:center">———</div>');
+      return `
+        <div class="scene">
+          <div class="kicker rise">The reframe</div>
+          <h2 class="hero wipe" style="font-size:54px">From solutioning → to understanding.</h2>
+          <div class="grow" style="display:flex;align-items:center;justify-content:center;gap:34px">${items}</div>
+        </div>`;
+    }
+  }
+];
+
+/* =================================================================
+   ENGINE — do not edit below unless extending the runtime.
+   ================================================================= */
+(function(){
+  // Assemble flat captions from per-scene captions (or a top-level CAPTIONS).
+  let CAPTIONS = [];
+  for(const sc of SCENES){
+    if(Array.isArray(sc.captions)) CAPTIONS = CAPTIONS.concat(sc.captions);
+  }
+  const totalSteps = SCENES.reduce((a,s)=>a+s.steps,0);
+
+  // ---- sync assertion (the one hard invariant) ----
+  if(CAPTIONS.length !== totalSteps){
+    console.error(`[demo-master] CC/steps DRIFT: ${totalSteps} steps but ${CAPTIONS.length} captions. They must be equal.`);
+  } else {
+    console.log(`[demo-master] OK — ${SCENES.length} scenes, ${totalSteps} steps, ${CAPTIONS.length} captions in sync.`);
+  }
+  for(const sc of SCENES){
+    if(Array.isArray(sc.captions) && sc.captions.length !== sc.steps){
+      console.error(`[demo-master] scene "${sc.id}": steps=${sc.steps} but captions=${sc.captions.length}.`);
+    }
+  }
+
+  // ---- global cursor ----
+  let global = 0; // 0..totalSteps-1
+  let started = false;
+  const root = document.getElementById('scene-root');
+  const ccEl = document.querySelector('#cc .cc-inner');
+  const idxEl = document.getElementById('idx');
+  const fill = document.querySelector('#progress .fill');
+  const gate = document.getElementById('gate');
+
+  function locate(g){
+    let acc=0;
+    for(let i=0;i<SCENES.length;i++){
+      const t=SCENES[i].steps;
+      if(g<acc+t) return {scene:i, step:g-acc};
+      acc+=t;
+    }
+    const last=SCENES.length-1;
+    return {scene:last, step:SCENES[last].steps-1};
+  }
+
+  function paint(){
+    const {scene,step}=locate(global);
+    root.innerHTML = SCENES[scene].render(step);
+    ccEl.parentElement.classList.toggle('hide', !CAPTIONS[global]);
+    ccEl.textContent = CAPTIONS[global] || "";
+    idxEl.textContent = `${String(global+1).padStart(2,'0')} / ${totalSteps}  ·  ${SCENES[scene].id}`;
+    fill.style.width = `${((global+1)/totalSteps)*100}%`;
+  }
+
+  function next(){ if(!started){startDeck();return;} if(global<totalSteps-1){global++;paint();} }
+  function prev(){ if(!started)return; if(global>0){global--;paint();} }
+  function jumpScene(i){
+    if(i<0||i>=SCENES.length)return;
+    let acc=0;for(let k=0;k<i;k++)acc+=SCENES[k].steps;
+    global=acc;started=true;gate.style.display='none';paint();
+  }
+  function startDeck(at){ started=true; gate.style.display='none'; global=(typeof at==='number')?Math.max(0,Math.min(totalSteps-1,at)):0; paint(); }
+
+  // ---- 16:9 fit ----
+  function fit(){
+    const pad=40;
+    const vw=window.innerWidth-pad, vh=window.innerHeight-pad;
+    const sw=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-w'));
+    const sh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-h'));
+    const scale=Math.min(vw/sw, vh/sh);
+    document.documentElement.style.setProperty('--scale', scale.toFixed(4));
+  }
+  window.addEventListener('resize', fit);
+
+  // ---- input ----
+  document.getElementById('stage').addEventListener('click', (e)=>{
+    if(e.target.closest('[data-no-advance]'))return;
+    if(e.target.closest('#progress'))return;
+    next();
+  });
+  window.addEventListener('keydown',(e)=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();prev();}
+    else if(e.key==='Home'){jumpScene(0);}
+    else if(e.key==='End'){global=totalSteps-1;started=true;gate.style.display='none';paint();}
+    else if(e.key>='1'&&e.key<='9'){jumpScene(Number(e.key)-1);}
+  });
+
+  // ---- progress ticks (click-to-jump per scene) ----
+  const ticks=document.querySelector('#progress .ticks');
+  SCENES.forEach((sc,i)=>{
+    const t=document.createElement('div');t.className='tick';t.title=sc.id;
+    t.addEventListener('click',(e)=>{e.stopPropagation();jumpScene(i);});
+    ticks.appendChild(t);
+  });
+
+  // ---- optional ?start=N deep-link, ?auto for autostart at scene 0 ----
+  const params=new URLSearchParams(location.search);
+  // ?still=1 → capture-safe: settle animations so headless frames aren't blank (render_mp4.sh uses this)
+  if(params.has('still')){ document.body.classList.add('still'); }
+  fit();
+  if(params.has('start')){ startDeck(Number(params.get('start'))||0); }
+  else if(params.has('auto')){ startDeck(); }
+  // else: wait on the gate
+})();
+</script>
+</body>
+</html>

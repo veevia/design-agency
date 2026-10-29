@@ -1,0 +1,67 @@
+name: Agent task
+description: Scope a task for an agent (for example the Copilot coding agent) using the OS task procedure.
+title: "[agent] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The agent follows AGENTS.md: scope → retrieve → execute → verify → hand off. After creating the issue,
+        assign it (for Copilot: Assignees → Copilot). The agent works from the repository, not from uncommitted local files.
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What should be true when this task is done?
+      placeholder: "Example: Add a journey map for the onboarding hub from the latest research synthesis and open a PR."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Hub, phase, files, links, prior decisions (cite IDs such as example-project-0003).
+      placeholder: "Hub: 01_Project-Hubs/example-project (phase: Understand). Relevant files: ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checks a good result must pass.
+      placeholder: |
+        - Artifact is in the hub's phase folder and cites its wiki sources.
+        - Claims carry observed / reported / assumed tags.
+        - No raw intake file is modified.
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and non-goals
+      description: Paths to avoid, permissions, sensitive-data rules, scope limits. Non-goals must not be empty.
+      placeholder: "Do not modify 00_context_intake/. Do not edit mounted plug-ins. No credentials."
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Verification
+      description: Commands the agent must run before handing off.
+      value: "python3 00_Agentic-OS/agentic-os-review.py"
+
+  - type: dropdown
+    id: handoff
+    attributes:
+      label: Handoff
+      options:
+        - Open a pull request when done
+        - Commit to a branch and wait for review before opening a pull request
+        - Research and comment with a plan only
+      default: 0
+    validations:
+      required: true
