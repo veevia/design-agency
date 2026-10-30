@@ -2,6 +2,18 @@
 
 **TL;DR:** Version 2.0.0 is the first public release of the Design Agency OS: a blank, reusable template with one rule set for every agent, six L0–L5 contracts, generated discovery for Copilot and Claude, plug-and-go plug-ins (FDE Design Toolkit, PDG, VPG and the skill packs they bind), a privacy and release gate, and a single integrity review.
 
+## Unreleased
+
+### Changed
+
+- [README](README.md) rewritten as one argument: why a team needs the OS, how it works and what changes when
+  you adopt it, then a three-step quickstart with example prompts, plug-ins and validation.
+
+### Added
+
+- An animated overview of the OS and its still image in [00_README/_assets/](00_README/_assets/README.md),
+  in the same style as the FDE Design Toolkit and VPG overviews.
+
 ## 2.0.0 — 2026-10-29
 
 First public release. The repository starts with fresh history and ships no customer or personal data; every

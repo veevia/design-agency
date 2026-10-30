@@ -32,7 +32,7 @@ into, has a `README.md` stating its purpose, what belongs there and any local ru
 |---|---|
 | `README.md`, `SETUP.md`, `AGENTS.md`, `CLAUDE.md`, `AUTHORITIES.md`, `CHANGELOG.md`, `agency.yaml` | Entry points, always-on agent rules, the authority registry, history and OS configuration |
 | `00_Agentic-OS/` | Task operating guide, the L0–L5 decisions, optimization backlog, initiatives, run evidence (`_runs/`) |
-| `00_README/` | Architecture, plug-in guide, capability map, these conventions, glossary, frameworks, templates |
+| `00_README/` | Architecture, plug-in guide, capability map, these conventions, glossary, frameworks, templates, README images (`_assets/`) |
 | `01_Project-Hubs/` | One hub per project, created from `_template-project/` |
 | `02_Workflows/` | Workflows W1–W5, prompts, SOPs; engine plug-ins mount here |
 | `03_Agents-and-Skills/` | Native skills and agents (flat), the generated catalog; skill plug-ins mount here |
