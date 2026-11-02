@@ -4,7 +4,11 @@
 
 Start here when your design or forward-deployed engineering (FDE) team works with AI agents. The template brings the rules, 87 skills, workflows from research to learning, and the checks that keep all of it consistent. Your team adds the projects.
 
-![The Design Agency OS as an animated diagram. A request moves through five task steps, each worked by an agent: Scope, Retrieve, Execute, Verify and Hand off, ending in a verified result. Above each step sits what it uses: AGENTS.md (always on), the capability catalog (87 skills), plug-ins (PDG and VPG, with a person's approval gate), the OS review (21 rows, an evidence gate) and the publish check (READY, an evidence gate), which escalates to the user. Verify returns corrections to Execute. Below, a project hub takes sources through Understand, Design, Build and Learn, and a next-loop rail returns from Learn to Understand. A bar of six contracts, L0 Authority to L5 Verification, supports every step. The animation brings each step into focus in turn, then returns to the full view.](00_README/_assets/design-agency-os.gif)
+<picture>
+  <source media="(prefers-reduced-motion: reduce)" srcset="00_README/_assets/design-agency-os.png">
+  <source type="image/avif" srcset="00_README/_assets/design-agency-os.avif">
+  <img alt="The Design Agency OS as an animated diagram. A request moves through five task steps, each worked by an agent: Scope, Retrieve, Execute, Verify and Hand off, ending in a verified result. Above each step sits what it uses: AGENTS.md (always on), the capability catalog (87 skills), plug-ins (PDG and VPG, with a person&#x27;s approval gate), the OS review (21 rows, an evidence gate) and the publish check (READY, an evidence gate), which escalates to the user. Verify returns corrections to Execute. Below, a project hub takes sources through Understand, Design, Build and Learn, and a next-loop rail returns from Learn to Understand. A bar of six contracts, L0 Authority to L5 Verification, supports every step. The animation brings each step into focus in turn, then returns to the full view." src="00_README/_assets/design-agency-os.gif">
+</picture>
 
 <sub>Still image: [00_README/_assets/design-agency-os.png](00_README/_assets/design-agency-os.png)</sub>
 

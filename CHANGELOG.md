@@ -12,7 +12,8 @@
 ### Added
 
 - An animated overview of the OS and its still image in [00_README/_assets/](00_README/_assets/README.md),
-  in the same style as the FDE Design Toolkit and VPG overviews.
+  in the same style as the PDG, FDE Design Toolkit and VPG overviews. The README offers it as an AVIF
+  (547 KB) first, with the GIF (3.2 MB) as the fallback and the still for readers who ask for reduced motion.
 
 ## 2.0.0 — 2026-10-29
 
